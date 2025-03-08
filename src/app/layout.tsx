@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Asap } from "next/font/google";
+import { AuthProvider } from "./context/AuthContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
+const asap = Asap({ subsets: ["latin"], weight: ["400", "700"] });
+
 export const metadata: Metadata = {
   title: "Pet Shop",
   description: "Welcome to Pet Shop",
 };
+
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 
 export default function RootLayout({
   children,
@@ -26,7 +33,15 @@ export default function RootLayout({
           type="image/png"
         />
       </head>
-      <body className={`${inter.variable} antialiased`}>{children}</body>
+      <body className={`${inter.className} ${asap.className} antialiased`}>
+        {GOOGLE_CLIENT_ID ? (
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <AuthProvider>{children}</AuthProvider>
+          </GoogleOAuthProvider>
+        ) : (
+          <p>Error: Missing Google Client ID</p>
+        )}
+      </body>
     </html>
   );
 }

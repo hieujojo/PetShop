@@ -4,8 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/app/context/AuthContext";
+import { useEffect } from "react";
 
 export default function Header() {
+  const { user } = useAuth();
+  useEffect(() => {
+    console.log("User data on homepage:", user);
+  }, [user]);
   return (
     <header className="sticky top-0 z-50 bg-[#19D025]">
       <div className="container mx-auto max-w-[1370px] px-4">
@@ -85,9 +91,16 @@ export default function Header() {
                 ></path>
               </svg>
             </div>
-            <div>
-              <div className="text-white mt-1">Đăng nhập</div>
-            </div>
+            {user ? (
+  <div>
+    <span>Hi {user.username}</span> 
+    <div className="account-dropdown"></div>
+  </div>
+) : (
+  <Link href="/auth/login">
+    <span>Đăng Nhập</span>
+  </Link>
+)}
           </div>
 
           <div className="ml-8 text-white">
@@ -304,7 +317,7 @@ export default function Header() {
 
               <div className="relative group">
                 <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Today's Sale
+                  Today&apos;s Sale
                 </button>
                 <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
                   <Link

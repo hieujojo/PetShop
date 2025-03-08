@@ -117,3 +117,17 @@
     @apply bg-background text-foreground;
   }
 }
+@keyframes rotateFromLeft {
+  from {
+    transform: perspective(1000px) rotateY(-180deg);
+    opacity: 0;
+  }
+  to {
+    transform: perspective(1000px) rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-rotate-page {
+  animation: rotateFromLeft 0.5s ease-in-out;
+}

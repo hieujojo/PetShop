@@ -7,6 +7,8 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/layout/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/home/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/Auth/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -61,6 +63,12 @@ export default {
       fontFamily: {
         sans: ['Asap', 'sans-serif'], 
       },
+      keyframes: {
+        rotateFromLeft: {
+          '0%': { transform: 'perspective(1000px) rotateY(-180deg)', opacity: '0' },
+          '100%': { transform: 'perspective(1000px) rotateY(0deg)', opacity: '1' }
+        }
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
