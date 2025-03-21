@@ -38,7 +38,6 @@ const SupportChat = () => {
 
   return (
     <div className="fixed bottom-6 right-6">
-      {/* Nút hỗ trợ */}
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-600 transition"
         onClick={() => setIsOpen(!isOpen)}
@@ -46,7 +45,6 @@ const SupportChat = () => {
         💬 Hỗ trợ
       </button>
 
-      {/* Form chat */}
       {isOpen && (
         <div className="absolute bottom-12 right-0 bg-white p-4 rounded-lg shadow-lg w-72">
           <h3 className="text-lg font-semibold mb-2">Hỗ trợ khách hàng</h3>
