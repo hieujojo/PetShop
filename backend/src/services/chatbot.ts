@@ -1,11 +1,11 @@
 import ModelClient, { isUnexpected } from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
 import dotenv from "dotenv";
-import pool from "../config/db"; // Import kết nối MySQL
+import pool from "../config/db"; 
 
 dotenv.config();
 
-const token = process.env["DEEPSEEK_API_KEY"];
+const token = process.env["OPENAI"];
 
 export const chatWithAI = async (messages: any, userId: string) => {
     try {
@@ -16,16 +16,13 @@ export const chatWithAI = async (messages: any, userId: string) => {
 
         const conn = await pool.getConnection();
         try {
-            // 🔹 Lấy lịch sử chat từ MySQL
             const [chatHistory]: any = await conn.query(
                 "SELECT role, content FROM chat_history WHERE user_id = ? ORDER BY created_at ASC",
                 [userId]
             );
 
-            // 🔹 Kết hợp lịch sử chat với tin nhắn mới
             const fullMessages = [...chatHistory, ...messages];
 
-            // 🔹 Gửi hội thoại đầy đủ đến AI
             const response = await client.path("/chat/completions").post({
                 body: {
                     messages: fullMessages,
@@ -42,13 +39,11 @@ export const chatWithAI = async (messages: any, userId: string) => {
 
             const aiMessage = response.body.choices[0].message.content;
 
-            // 🔹 Lưu tin nhắn người dùng vào MySQL
             await conn.query(
                 "INSERT INTO chat_history (user_id, role, content) VALUES (?, ?, ?)",
                 [userId, "user", messages[messages.length - 1].content]
             );
 
-            // 🔹 Lưu phản hồi từ AI vào MySQL
             await conn.query(
                 "INSERT INTO chat_history (user_id, role, content) VALUES (?, ?, ?)",
                 [userId, "assistant", aiMessage]

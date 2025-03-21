@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import authRoutes from './routes/authRoutes';
-import dataRoutes from './routes/dataRoutes';
-import chatbotRoutes from "./routes/chatbotRoutes";
+import authRoutes from './services/routes/authRoutes';
+import dataRoutes from './services/routes/dataRoutes';
+import chatbotRoutes from "./services/routes/chatbotRoutes";
 
 const app = express();
 const port = 5000;

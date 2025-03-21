@@ -1,5 +1,5 @@
 import express from "express";
-import connection from "../utils/database"; // Import kết nối MySQL
+import connection from "../../utils/database"; // Import kết nối MySQL
 
 const router = express.Router();
 
