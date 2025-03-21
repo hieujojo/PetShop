@@ -24,7 +24,7 @@ const useLoginFormHandler = () => {
     setLoading(true);
   
     try {
-      const response = await fetch("/api/auth/google", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -36,9 +36,9 @@ const useLoginFormHandler = () => {
       }
   
       localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token); 
+      localStorage.setItem("token", data.token);
   
-      login(data.user); 
+      login(data.user);
   
       alert("Đăng nhập thành công!");
       router.push("/");
@@ -48,19 +48,18 @@ const useLoginFormHandler = () => {
       setLoading(false);
     }
   };
-  
-  
+
   return { formData, handleChange, handleLogin, loading, error };
 };
 
 export default useLoginFormHandler;
+
 interface User {
   id: string;
   email: string;
-  name: string;
 }
 
 function login(user: User) {
-    console.log("User logged in:", user);
+  console.log("User logged in:", user);
+  throw new Error("Function not implemented.");
 }
-

@@ -5,15 +5,14 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/app/context/AuthContext";
-import { useEffect } from "react";
+import { useState } from "react";
 
 export default function Header() {
-  const { user } = useAuth();
-  useEffect(() => {
-    console.log("User data on homepage:", user);
-  }, [user]);
+  const { user, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <header className="sticky top-0 z-50 bg-[#19D025]">
+    <header className="sticky top-0 z-50 bg-[#234BBB]">
       <div className="container mx-auto max-w-[1370px] px-4">
         <div className="flex items-center py-4">
           <div>
@@ -72,37 +71,57 @@ export default function Header() {
             </div>
           </div>
 
-          <div className="ml-8 text-white">
-            <div className="ml-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                className="h-[32px] w-[32px] ml-2 text-white"
-                viewBox="0 0 1024 1024"
-                fill="currentColor"
-              >
-                <path
-                  className="path1"
-                  d="M486.4 563.2c-155.275 0-281.6-126.325-281.6-281.6s126.325-281.6 281.6-281.6 281.6 126.325 281.6 281.6-126.325 281.6-281.6 281.6zM486.4 51.2c-127.043 0-230.4 103.357-230.4 230.4s103.357 230.4 230.4 230.4c127.042 0 230.4-103.357 230.4-230.4s-103.358-230.4-230.4-230.4z"
-                ></path>
-                <path
-                  className="path2"
-                  d="M896 1024h-819.2c-42.347 0-76.8-34.451-76.8-76.8 0-3.485 0.712-86.285 62.72-168.96 36.094-48.126 85.514-86.36 146.883-113.634 74.957-33.314 168.085-50.206 276.797-50.206 108.71 0 201.838 16.893 276.797 50.206 61.37 27.275 110.789 65.507 146.883 113.634 62.008 82.675 62.72 165.475 62.72 168.96 0 42.349-34.451 76.8-76.8 76.8zM486.4 665.6c-178.52 0-310.267 48.789-381 141.093-53.011 69.174-54.195 139.904-54.2 140.61 0 14.013 11.485 25.498 25.6 25.498h819.2c14.115 0 25.6-11.485 25.6-25.6-0.006-0.603-1.189-71.333-54.198-140.507-70.734-92.304-202.483-141.093-381.002-141.093z"
-                ></path>
-              </svg>
-            </div>
-            {user ? (
-  <div>
-    <span>Hi {user.username}</span> 
-    <div className="account-dropdown"></div>
-  </div>
-) : (
-  <Link href="/auth/login">
-    <span>Đăng Nhập</span>
-  </Link>
-)}
-          </div>
+          <div className="relative ml-8">
+      <div className="ml-4 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+          className="h-[32px] w-[32px] ml-2 mb-1 text-white"
+          viewBox="0 0 1024 1024"
+          fill="currentColor"
+        >
+          <path
+            className="path1"
+            d="M486.4 563.2c-155.275 0-281.6-126.325-281.6-281.6s126.325-281.6 281.6-281.6 281.6 126.325 281.6 281.6-126.325 281.6-281.6 281.6zM486.4 51.2c-127.043 0-230.4 103.357-230.4 230.4s103.357 230.4 230.4 230.4c127.042 0 230.4-103.357 230.4-230.4s-103.358-230.4-230.4-230.4z"
+          ></path>
+          <path
+            className="path2"
+            d="M896 1024h-819.2c-42.347 0-76.8-34.451-76.8-76.8 0-3.485 0.712-86.285 62.72-168.96 36.094-48.126 85.514-86.36 146.883-113.634 74.957-33.314 168.085-50.206 276.797-50.206 108.71 0 201.838 16.893 276.797 50.206 61.37 27.275 110.789 65.507 146.883 113.634 62.008 82.675 62.72 165.475 62.72 168.96 0 42.349-34.451 76.8-76.8 76.8zM486.4 665.6c-178.52 0-310.267 48.789-381 141.093-53.011 69.174-54.195 139.904-54.2 140.61 0 14.013 11.485 25.498 25.6 25.498h819.2c14.115 0 25.6-11.485 25.6-25.6-0.006-0.603-1.189-71.333-54.198-140.507-70.734-92.304-202.483-141.093-381.002-141.093z"
+          ></path>
+        </svg>
+      </div>
 
+      {user ? (
+        <div className="relative">
+          <button className="text-white focus:outline-none ml-1" onClick={() => setIsOpen(!isOpen)}>
+            Tài khoản
+          </button>
+
+          {isOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg">
+              <div className="p-2 border-b">
+                <span className="font-semibold">Hi {user.name}</span>
+              </div>
+              <ul>
+                <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Chi tiết tài khoản</li>
+                <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Địa chỉ</li>
+                <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Đặt lại mật khẩu</li>
+                <li
+                  className="px-4 py-2 hover:bg-red-500 hover:text-white cursor-pointer"
+                  onClick={logout}
+                >
+                  Đăng xuất
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      ) : (
+        <Link href="/auth/login">
+          <span className="cursor-pointer text-white">Đăng Nhập</span>
+        </Link>
+      )}
+    </div>
           <div className="ml-8 text-white">
             <div className="ml-3">
               <svg

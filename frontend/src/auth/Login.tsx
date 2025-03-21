@@ -11,16 +11,19 @@ const LoginForm = () => {
     useLoginFormHandler();
 
   return (
-    <div className="flex items-center h-screen bg-[#1688AD]">
+    <div className="flex items-center h-screen bg-[#22c55e]">
+      <div className="bg-[#F7C947]  w-[600px] h-screen">
       <Image
-        src="/images/ShibaBlack (3).png"
+        src="/images/DogShiba.png"
         alt="Shiba Inu"
         width={608}
         height={100}
         quality={100}
         className="h-screen"
       />
-      <div className="w-[450px] ml-56 p-8 bg-[#1688AD]">
+      </div>
+    
+      <div className="w-[450px] ml-56 p-8 bg-[#22c55e]">
         <h2 className="text-white text-3xl font-bold mb-6 text-center">
           Đăng Nhập
         </h2>
@@ -31,7 +34,7 @@ const LoginForm = () => {
               type="email"
               name="email"
               value={formData.email}
-              onChange={handleChange} 
+              onChange={handleChange}
               placeholder="Email"
               className="w-full p-3 pl-4 rounded-3xl bg-transparent border border-white text-white focus:outline-none focus:ring-2 focus:ring-white text-lg"
             />
@@ -43,11 +46,10 @@ const LoginForm = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Mật khẩu"
+              placeholder="Mật Khẩu"
               className="w-full p-3 pl-4 rounded-3xl bg-transparent border border-white text-white focus:outline-none focus:ring-2 focus:ring-white text-lg"
             />
           </div>
-          {error && <p className="text-red-500 text-lg mb-4">{error}</p>}
           <button
             type="submit"
             disabled={loading}
@@ -55,6 +57,7 @@ const LoginForm = () => {
           >
             {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
           </button>
+          {error && <p className="text-red-500 text-lg mb-4">{error}</p>}
           <div className="text-center text-white mt-5 cursor-pointer hover:underline text-lg">
             Quên mật khẩu?
           </div>

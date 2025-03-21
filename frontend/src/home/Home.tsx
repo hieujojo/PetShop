@@ -7,6 +7,7 @@ import AccessoryProducts from "./AccessoryProducts";
 import Collections from "./Collections";
 import BrandBoss from "./Brand";
 import ArticleCard from "./ArticleCard";
+import SupportChat from "@/components/chatbot/SupportChat";
 
 const Home = () => {
   const services = [
@@ -44,7 +45,7 @@ const Home = () => {
           <div className="flex justify-center text-white text-[13px] items-center mt-1">
             <button
               type="submit"
-              className="bg-[#19D025] font-bold w-32 text-white px-3 py-1 rounded-3xl ml-4"
+              className="bg-[#234BBB] font-bold w-32 text-white px-3 py-1 rounded-3xl ml-4"
             >
               Đăng ký ngay!
             </button>
@@ -53,7 +54,7 @@ const Home = () => {
       </div>
       <div className="flex justify-center">
         <Image
-          src="https://paddy.vn/cdn/shop/files/paddy-hpny_1880_x_720_px.png?v=1737538115&width=1880"
+          src="https://paddy.vn/cdn/shop/files/z4562405431549_c0a99767703385433c54c1477709b82b.jpg?v=1742465924&width=2000"
           alt="shiba"
           width={1360}
           height={1000}
@@ -159,9 +160,7 @@ const Home = () => {
           </Link>
         </div>
       </div>
-      <>
-        <AccessoryProducts />
-      </>
+      <><AccessoryProducts /></>
       <div className="flex justify-between items-center mt-10">
         <div className="font-bold text-2xl ml-20 mt-6">
           1000+ Thương Hiệu Boss Thích
@@ -175,9 +174,7 @@ const Home = () => {
           </Link>
         </div>
       </div>
-      <>
-        <BrandBoss />
-      </>
+      <><BrandBoss /></>
       <div className="flex justify-between items-center mt-12">
         <div className="font-bold text-2xl ml-20 mt-6">
         Chăm Boss Cùng Paddy
@@ -191,9 +188,8 @@ const Home = () => {
           </Link>
         </div>
       </div>
-      <>
-      <ArticleCard />
-      </>
+      <><ArticleCard /></>
+      <><SupportChat /></>
     </>
   );
 };

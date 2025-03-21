@@ -19,7 +19,7 @@ const Footer = () => {
             />
             <button
               type="submit"
-              className="bg-[#19D025] font-bold w-36 text-white px-4 py-2 rounded-3xl ml-4 hover:bg-black"
+              className="bg-[#234BBB] font-bold w-36 text-white px-4 py-2 rounded-3xl ml-4 hover:bg-black"
             >
               Đăng ký
             </button>
