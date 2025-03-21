@@ -1,11 +1,11 @@
 # Pet Shop
 
 ## Introduction
-Pet Shop is an e-commerce website that allows users to shop for pet products. The project is built with Next.js 13, TypeScript, MySQL, and other modern technologies.
+Pet Shop is an e-commerce website that allows users to shop for pet products. The project is built with Next.js 13, TypeScript, Node.js, Express.js, MySQL, and other modern technologies.
 
 ## Technologies Used
 - **Frontend**: Next.js 13, TypeScript, React
-- **Backend**: Next.js API Routes, MySQL
+- **Backend**: Node.js, Express.js (fully written in TypeScript)
 - **Authentication**: Google & Facebook Login (`react-oauth2-code`)
 - **Database**: MySQL
 - **AI Chatbot History Storage**: MySQL
@@ -40,8 +40,19 @@ NEXT_PUBLIC_FACEBOOK_APP_SECRET=your_facebook_app_secret
 npm install
 ```
 
-### 4. Run the project
+### 4. Run the backend server
+Navigate to the `backend` folder and start the TypeScript-based Node.js server:
 ```bash
+cd backend
+npm install
+npm run dev
+```
+The backend server will run on `http://localhost:5000`
+
+### 5. Run the frontend
+Go back to the root folder and start the Next.js application:
+```bash
+cd ..
 npm run dev
 ```
 Then access `http://localhost:3000`
@@ -49,13 +60,23 @@ Then access `http://localhost:3000`
 ## Project Structure
 ```
 PetShop/
-├── components/       # Shared components
-├── pages/            # Application pages
-├── api/              # Next.js API routes
-├── models/           # MySQL models
-├── utils/            # Utility functions
-├── public/           # Static assets
-├── styles/           # CSS files and Styled Components
+├── backend/          # Node.js backend (fully written in TypeScript)
+│   ├── models/       # TypeScript models for MySQL
+│   ├── routes/       # API routes
+│   ├── controllers/  # Business logic
+│   ├── config/       # Configuration files
+│   ├── types/        # TypeScript types
+│   ├── middleware/   # Custom middleware
+│   ├── services/     # Service layer
+│   ├── utils/        # Utility functions
+│   ├── tsconfig.json # TypeScript configuration
+│   └── server.ts     # Main server file
+├── frontend/         # Next.js frontend
+│   ├── components/   # Shared components
+│   ├── pages/        # Application pages
+│   ├── utils/        # Utility functions
+│   ├── public/       # Static assets
+│   ├── styles/       # CSS files and Styled Components
 └── README.md         # Project documentation
 ```
 
