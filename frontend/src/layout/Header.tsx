@@ -5,14 +5,68 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/app/context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import ToggleThemeButton from "@/components/ui/ToggleThemeButton";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter, usePathname } from "next/navigation";
+
+// Định nghĩa kiểu cho menu item
+interface MenuItem {
+  id: number;
+  category: string;
+  sub_item: string;
+  locale: string;
+}
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const t = useTranslations("header");
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Lấy dữ liệu menu từ backend
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/menu?locale=${locale}`);
+        const data = await res.json();
+        setMenuItems(data);
+      } catch (error) {
+        console.error("Failed to fetch menu items:", error);
+      }
+    };
+    fetchMenuItems();
+  }, [locale]);
+
+  // Nhóm các mục menu theo category
+  const groupedMenuItems = menuItems.reduce((acc: { [key: string]: MenuItem[] }, item: MenuItem) => {
+    if (!acc[item.category]) {
+      acc[item.category] = [];
+    }
+    acc[item.category].push(item);
+    return acc;
+  }, {});
+
+  // Hàm chuyển đổi ngôn ngữ
+  const switchLanguage = () => {
+    const newLocale = locale === "vi" ? "en" : "vi";
+    let newPath;
+  
+    if (pathname === "/" || pathname === `/${locale}`) {
+      newPath = `/${newLocale}`; // Chỉ thay đổi locale nếu ở trang chủ
+    } else {
+      newPath = `/${newLocale}${pathname.replace(/^\/(vi|en)/, "")}`; // Giữ nguyên đường dẫn hiện tại
+    }
+  
+    console.log("Switching to:", newPath); // Kiểm tra đường dẫn
+    router.push(newPath);
+  };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#234BBB]">
+    <header className="sticky top-0 z-50 bg-blue-600 dark:bg-blue-800">
       <div className="container mx-auto max-w-[1370px] px-4">
         <div className="flex items-center py-4">
           <div>
@@ -30,11 +84,7 @@ export default function Header() {
           <div className="hidden lg:block bg-white rounded-md max-w-[680px] flex-1 ml-28">
             <div className="relative">
               <Input type="search" className="w-full h-[50px]" />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-              >
+              <Button className="absolute bg-white right-2 top-1/2 -translate-y-1/2 shadow-none">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512"
@@ -47,7 +97,7 @@ export default function Header() {
           </div>
 
           <div className="ml-16 text-white">
-            <div>Hotline</div>
+            <div>{t("hotline")}</div>
             <div className="font-bold">086 767 7891</div>
           </div>
 
@@ -58,70 +108,63 @@ export default function Header() {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="h-[32px] w-[32px] ml-2 text-white"
               >
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
               </svg>
             </div>
             <div>
-              <div className="text-white mt-1">Wishlist</div>
+              <div className="text-white mt-1">{t("wishlist")}</div>
             </div>
           </div>
 
           <div className="relative ml-8">
-      <div className="ml-4 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-          className="h-[32px] w-[32px] ml-2 mb-1 text-white"
-          viewBox="0 0 1024 1024"
-          fill="currentColor"
-        >
-          <path
-            className="path1"
-            d="M486.4 563.2c-155.275 0-281.6-126.325-281.6-281.6s126.325-281.6 281.6-281.6 281.6 126.325 281.6 281.6-126.325 281.6-281.6 281.6zM486.4 51.2c-127.043 0-230.4 103.357-230.4 230.4s103.357 230.4 230.4 230.4c127.042 0 230.4-103.357 230.4-230.4s-103.358-230.4-230.4-230.4z"
-          ></path>
-          <path
-            className="path2"
-            d="M896 1024h-819.2c-42.347 0-76.8-34.451-76.8-76.8 0-3.485 0.712-86.285 62.72-168.96 36.094-48.126 85.514-86.36 146.883-113.634 74.957-33.314 168.085-50.206 276.797-50.206 108.71 0 201.838 16.893 276.797 50.206 61.37 27.275 110.789 65.507 146.883 113.634 62.008 82.675 62.72 165.475 62.72 168.96 0 42.349-34.451 76.8-76.8 76.8zM486.4 665.6c-178.52 0-310.267 48.789-381 141.093-53.011 69.174-54.195 139.904-54.2 140.61 0 14.013 11.485 25.498 25.6 25.498h819.2c14.115 0 25.6-11.485 25.6-25.6-0.006-0.603-1.189-71.333-54.198-140.507-70.734-92.304-202.483-141.093-381.002-141.093z"
-          ></path>
-        </svg>
-      </div>
-
-      {user ? (
-        <div className="relative">
-          <button className="text-white focus:outline-none ml-1" onClick={() => setIsOpen(!isOpen)}>
-            Tài khoản
-          </button>
-
-          {isOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg">
-              <div className="p-2 border-b">
-                <span className="font-semibold">Hi {user.name}</span>
-              </div>
-              <ul>
-                <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Chi tiết tài khoản</li>
-                <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Địa chỉ</li>
-                <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Đặt lại mật khẩu</li>
-                <li
-                  className="px-4 py-2 hover:bg-red-500 hover:text-white cursor-pointer"
-                  onClick={logout}
-                >
-                  Đăng xuất
-                </li>
-              </ul>
+            <div className="ml-4 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                className="h-[32px] w-[32px] ml-2 mb-1 text-white"
+                viewBox="0 0 1024 1024"
+                fill="currentColor"
+              >
+                <path
+                  className="path1"
+                  d="M486.4 563.2c-155.275 0-281.6-126.325-281.6-281.6s126.325-281.6 281.6-281.6 281.6 126.325 281.6 281.6-126.325 281.6-281.6 281.6zM486.4 51.2c-127.043 0-230.4 103.357-230.4 230.4s103.357 230.4 230.4 230.4c127.042 0 230.4-103.357 230.4-230.4s-103.358-230.4-230.4-230.4z"
+                ></path>
+                <path
+                  className="path2"
+                  d="M896 1024h-819.2c-42.347 0-76.8-34.451-76.8-76.8 0-3.485 0.712-86.285 62.72-168.96 36.094-48.126 85.514-86.36 146.883-113.634 74.957-33.314 168.085-50.206 276.797-50.206 108.71 0 201.838 16.893 276.797 50.206 61.37 27.275 110.789 65.507 146.883 113.634 62.008 82.675 62.72 165.475 62.72 168.96 0 42.349-34.451 76.8-76.8 76.8zM486.4 665.6c-178.52 0-310.267 48.789-381 141.093-53.011 69.174-54.195 139.904-54.2 140.61 0 14.013 11.485 25.498 25.6 25.498h819.2c14.115 0 25.6-11.485 25.6-25.6-0.006-0.603-1.189-71.333-54.198-140.507-70.734-92.304-202.483-141.093-381.002-141.093z"
+                ></path>
+              </svg>
             </div>
-          )}
+
+            {user ? (
+  <div className="relative">
+    <button
+      className="text-white focus:outline-none ml-1"
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      {t("account")}
+    </button>
+    {isOpen && (
+      <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-lg shadow-lg">
+        <div className="p-2 border-b">
+          <span className="font-semibold">Hi {user?.name || "User"}</span>
         </div>
-      ) : (
-        <Link href="/auth/login">
-          <span className="cursor-pointer text-white">Đăng Nhập</span>
-        </Link>
-      )}
-    </div>
+        {/* ... */}
+      </div>
+    )}
+  </div>
+) : (
+  <Link href="/auth/login">
+    <span className="cursor-pointer text-white">{t("login")}</span>
+  </Link>
+)}
+          </div>
+
           <div className="ml-8 text-white">
             <div className="ml-3">
               <svg
@@ -145,219 +188,59 @@ export default function Header() {
               </svg>
             </div>
             <div>
-              <div className="text-white mt-1">Giỏ Hàng</div>
+              <div className="text-white mt-1">{t("cart")}</div>
             </div>
           </div>
+
+          {/* Nút chuyển đổi ngôn ngữ */}
+          <div className="ml-8">
+            <button
+              onClick={switchLanguage}
+              className="flex items-center space-x-2 px-4 py-2 bg-white text-blue-600 rounded-full hover:bg-blue-100 transition duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"></path>
+                <path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"></path>
+              </svg>
+              <span>{locale === "vi" ? "English" : "Tiếng Việt"}</span>
+            </button>
+          </div>
         </div>
+
         <div className="">
           <div className="container mx-auto px-4">
             <div className="flex space-x-8 py-2">
+            {Object.keys(groupedMenuItems).map((category) => (
+  <div key={category} className="relative group">
+    <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
+      {category}
+    </button>
+    <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
+      {groupedMenuItems[category].map((item: MenuItem) => (
+        <Link
+          key={item.id} // Sử dụng item.id làm key
+          href="#"
+          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+        >
+          {item.sub_item}
+        </Link>
+      ))}
+    </div>
+  </div>
+))}
               <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Chó
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Thức ăn cho chó
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Phụ kiện cho chó
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Đồ chơi cho chó
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Mèo
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Thức ăn cho mèo
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Phụ kiện cho mèo
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Đồ chơi cho mèo
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Thiết bị thông minh
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Camera theo dõi thú cưng
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Máy cho ăn tự động
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Vòng đeo thông minh
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Hàng mới về
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Sản phẩm mới cho chó
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Sản phẩm mới cho mèo
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Phụ kiện mới
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Thương hiệu
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Royal Canin
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Pedigree
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Whiskas
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Pagazine chăm Boss
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Cách chăm sóc chó
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Cách chăm sóc mèo
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Mẹo huấn luyện thú cưng
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  News
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Tin tức về chó
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Tin tức về mèo
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Sự kiện thú cưng
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative group">
-                <button className="text-white text-[18px] font-bold group-hover:after:content-[''] group-hover:after:absolute group-hover:after:w-full group-hover:after:h-[2px] group-hover:after:bg-white group-hover:after:bottom-0 group-hover:after:left-0 transition-all">
-                  Today&apos;s Sale
-                </button>
-                <div className="absolute hidden group-hover:block bg-white shadow-lg rounded-lg mt-2 py-2 w-48">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Giảm giá thức ăn
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Giảm giá phụ kiện
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Combo tiết kiệm
-                  </Link>
-                </div>
+                <ToggleThemeButton />
               </div>
             </div>
           </div>

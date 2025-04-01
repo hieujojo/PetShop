@@ -1,4 +1,3 @@
-// src/routes/dataRoutes.ts
 import express from 'express';
 import { getData, addData } from '../controllers/dataController';
 

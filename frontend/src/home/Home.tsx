@@ -8,31 +8,9 @@ import Collections from "./Collections";
 import BrandBoss from "./Brand";
 import ArticleCard from "./ArticleCard";
 import SupportChat from "@/components/chatbot/SupportChat";
+import { services } from "@/data/servicesData";
 
 const Home = () => {
-  const services = [
-    {
-      src: "https://paddy.vn/cdn/shop/files/icon_web-01_1880x.png?v=1692851925",
-      alt: "Shipping Policy",
-      href: "/shipping-policy",
-    },
-    {
-      src: "https://paddy.vn/cdn/shop/files/icon_web-02_1880x.png?v=1692851981",
-      alt: "Authentic Product",
-      href: "/authentic-product",
-    },
-    {
-      src: "https://paddy.vn/cdn/shop/files/icon_web-03_1880x.png?v=1692853446",
-      alt: "Convenient Payment",
-      href: "/convenient-payment",
-    },
-    {
-      src: "https://paddy.vn/cdn/shop/files/icon_web-04_1880x.png?v=1692853499",
-      alt: "Professional Support",
-      href: "/professional-support",
-    },
-  ];
-
   return (
     <>
       <div className="bg-[#ffd700] h-[65px]">
@@ -80,7 +58,6 @@ const Home = () => {
                   </div>
                 </Link>
               </div>
-
               {index < services.length - 1 && (
                 <div className="border-r mx-[-5px] my-[10px] border-gray-300"></div>
               )}
@@ -160,7 +137,9 @@ const Home = () => {
           </Link>
         </div>
       </div>
-      <><AccessoryProducts /></>
+      <>
+        <AccessoryProducts />
+      </>
       <div className="flex justify-between items-center mt-10">
         <div className="font-bold text-2xl ml-20 mt-6">
           1000+ Thương Hiệu Boss Thích
@@ -174,10 +153,12 @@ const Home = () => {
           </Link>
         </div>
       </div>
-      <><BrandBoss /></>
+      <>
+        <BrandBoss />
+      </>
       <div className="flex justify-between items-center mt-12">
         <div className="font-bold text-2xl ml-20 mt-6">
-        Chăm Boss Cùng Paddy
+          Chăm Boss Cùng Paddy
         </div>
         <div className="mt-7 text-[15px]">
           <Link
@@ -188,8 +169,12 @@ const Home = () => {
           </Link>
         </div>
       </div>
-      <><ArticleCard /></>
-      <><SupportChat /></>
+      <>
+        <ArticleCard />
+      </>
+      <>
+        <SupportChat />
+      </>
     </>
   );
 };

@@ -5,11 +5,11 @@
   "license": "ISC",
   "author": "",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
-    "dev": "nodemon --ext ts --exec ts-node src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "tsc"
   },
   "dependencies": {
     "@azure-rest/ai-inference": "^1.0.0-beta.5",
