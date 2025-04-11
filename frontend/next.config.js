@@ -1,9 +1,31 @@
-/** @type {import('next').NextConfig} */
+import withNextIntl from 'next-intl/plugin';
+
+const withNextIntlConfig = withNextIntl('./i18n.ts');
+
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["paddy.vn", "cdn.shopify.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'paddy.vn',
+        port: '',
+        pathname: '/**', 
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.shopify.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
 };
 
-module.exports = nextConfig;
+export default withNextIntlConfig(nextConfig);

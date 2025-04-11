@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 interface User {
   token: string;
-  name?: string;
+  name?: string; // Tùy chọn, nhưng sẽ có giá trị mặc định nếu không cung cấp
   email?: string;
 }
 
@@ -25,55 +25,64 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
+  // Kiểm tra localStorage có khả dụng không
   const isLocalStorageAvailable = () => {
     try {
       const testKey = "__test__";
       localStorage.setItem(testKey, testKey);
       localStorage.removeItem(testKey);
       return true;
-    } catch  {
+    } catch {
       return false;
     }
   };
 
-  const isTokenValid = (token: string) => {
+  // Kiểm tra token có hợp lệ không
+  const isTokenValid = (token: string): boolean => {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return payload.exp * 1000 > Date.now();
     } catch (error) {
-      console.log(error)
+      console.error("Lỗi khi kiểm tra token:", error);
       return false;
     }
   };
 
+  // Load user từ localStorage khi khởi tạo
   useEffect(() => {
     if (!isLocalStorageAvailable()) {
       console.error("localStorage không khả dụng");
       return;
     }
 
-    try {
-      const storedUser = localStorage.getItem("user");
-      const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
 
-      if (storedUser && storedToken && isTokenValid(storedToken)) {
+    if (storedUser && storedToken && isTokenValid(storedToken)) {
+      try {
         const parsedUser: User = JSON.parse(storedUser);
-        setUser({ ...parsedUser, token: storedToken });
-      } else {
+        // Đảm bảo user luôn có name, mặc định là "User" nếu thiếu
+        setUser({ ...parsedUser, token: storedToken, name: parsedUser.name || "User" });
+      } catch (error) {
+        console.error("Lỗi khi parse dữ liệu user từ localStorage:", error);
+        setUser(null);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
       }
-    } catch (error) {
-      console.error("Lỗi khi parse dữ liệu user từ localStorage:", error);
+    } else {
+      setUser(null);
       localStorage.removeItem("user");
       localStorage.removeItem("token");
     }
   }, []);
 
+  // Đồng bộ user với localStorage khi user thay đổi
   useEffect(() => {
+    if (!isLocalStorageAvailable()) return;
+
     if (user) {
       try {
-        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("user", JSON.stringify({ name: user.name, email: user.email }));
         localStorage.setItem("token", user.token);
       } catch (error) {
         console.error("Lỗi khi lưu dữ liệu vào localStorage:", error);
@@ -84,14 +93,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
+  // Hàm login
   const login = (userData: User) => {
-    setUser(userData);
+    // Đảm bảo userData có name, nếu không thì gán mặc định
+    const safeUserData = { ...userData, name: userData.name || "User" };
+    setUser(safeUserData);
   };
 
+  // Hàm logout
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    if (isLocalStorageAvailable()) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
   };
 
   return (

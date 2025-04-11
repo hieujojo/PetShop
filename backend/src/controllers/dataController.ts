@@ -1,26 +1,16 @@
-// src/controllers/dataController.ts
 import { Request, Response } from 'express';
-import connection from '../utils/database';
+import { getAllData } from '../models/dataModel';
 
-export const getData = (req: Request, res: Response) => {
-  connection.query('SELECT * FROM mytable', (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Error executing query');
-      return;
-    }
-    res.json(results);
-  });
-};
+interface CustomRequest extends Request {
+  db: any; // Đối tượng MongoDB Db
+}
 
-export const addData = (req: Request, res: Response) => {
-  const { name, age } = req.body;
-  connection.query('INSERT INTO mytable (name, age) VALUES (?, ?)', [name, age], (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Error executing query');
-      return;
-    }
-    res.status(201).send('Data added successfully');
-  });
+export const getData = async (req: CustomRequest, res: Response) => {
+  try {
+    const data = await getAllData(req.db); // Gọi hàm async từ model
+    res.status(200).json(data);
+  } catch (error: any) {
+    console.error('Controller error:', error);
+    res.status(500).json({ error: 'Failed to fetch data: ' + error.message });
+  }
 };

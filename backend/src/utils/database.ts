@@ -1,24 +1,36 @@
-import mysql from 'mysql2';
+import { MongoClient, Db } from 'mongodb';
 import dotenv from 'dotenv';
 
-// Load biến môi trường từ .env
 dotenv.config();
 
-// Tạo kết nối MySQL
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD as string,
-  database: process.env.DB_DATABASE,
-  port: Number(process.env.DB_PORT) || 3306, 
-});
+const mongoURI = process.env.MONGO_URI as string;
+const client = new MongoClient(mongoURI);
+let db: Db;
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Lỗi kết nối MySQL:', err);
-    return;
+const connectDB = async () => {
+  try {
+    await client.connect();
+    console.log('Kết nối MongoDB Atlas thành công');
+    db = client.db("petshop_mongo");
+    return db;
+  } catch (error) {
+    console.error('Lỗi kết nối MongoDB:', error);
+    process.exit(1);
   }
-  console.log('Kết nối MySQL thành công!');
-});
+};
 
-export default connection;
+export function getDb(): Db {
+  if (!db) {
+    throw new Error("Database not initialized. Call connectDB first.");
+  }
+  // Kiểm tra xem kết nối còn hoạt động không
+  try {
+    client.db("petshop_mongo").command({ ping: 1 });
+  } catch (error) {
+    console.error('Kết nối MongoDB bị gián đoạn, đang thử kết nối lại...');
+    throw new Error('MongoDB connection lost. Please restart the server.');
+  }
+  return db;
+}
+
+export default connectDB;
