@@ -1,8 +1,22 @@
-import express, { Request, Response } from 'express';
+import express, { RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getCollections } from '../../controllers/home/collectionController';
+
+interface CustomRequest extends Request {
+  db: any;
+}
+
+const getCollectionsHandler: RequestHandler = async (req, res: Response, next: NextFunction) => {
+  try {
+    const customReq = req as CustomRequest;
+    await getCollections(customReq, res);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const router = express.Router();
 
-router.get('/collections', (req: Request, res: Response) => getCollections(req as any, res));;
+router.get('/', getCollectionsHandler);
 
 export default router;

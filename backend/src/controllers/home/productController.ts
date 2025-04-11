@@ -5,12 +5,15 @@ interface CustomRequest extends Request {
   db?: any; 
 }
 
-export const getProducts = (req: CustomRequest, res: Response) => {
-  getAllProducts(req.db, (error, results) => {
-    if (error) {
-      console.error('Controller error:', error);
-      return res.status(500).json({ error: 'Failed to fetch products: ' + error.message });
+export const getProducts = async (req: CustomRequest, res: Response) => {
+  try {
+    if (!req.db) {
+      throw new Error('Database connection is not available');
     }
-    res.status(200).json(results);
-  });
+    const products = await getAllProducts(req.db);
+    res.status(200).json(products);
+  } catch (error: any) {
+    console.error('Controller error:', error);
+    res.status(500).json({ error: 'Failed to fetch products: ' + error.message });
+  }
 };

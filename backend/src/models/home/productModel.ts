@@ -1,13 +1,18 @@
-import { Connection } from 'mysql2';
+import { Db } from 'mongodb';
 
-export const getAllProducts = (db: Connection, callback: (error: any, results?: any) => void) => {
-  const query = 'SELECT * FROM products';
-  db.query(query, (error, results) => {
-    if (error) {
-      console.error('Error fetching products:', error);
-      return callback(error);
-    }
-    console.log('Products fetched successfully:', results);
-    callback(null, results);
-  });
+export const getAllProducts = async (db: Db): Promise<any[]> => {
+  try {
+    const start = Date.now();
+    const products = await db.collection('products').find().toArray();
+    const serializedProducts = products.map(product => ({
+      ...product,
+      _id: product._id.toString(),
+    }));
+    const duration = Date.now() - start;
+    console.log(`Products fetched successfully: [${serializedProducts.length} items] in ${duration}ms`, serializedProducts);
+    return serializedProducts;
+  } catch (error: any) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
 };

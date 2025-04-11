@@ -1,6 +1,6 @@
 // app/[locale]/home/page.tsx
 import { useTranslations } from 'next-intl';
-import Header from '@/layout/Header';
+import Header from '@/components/layout/Header';
 
 export default function HomePage() {
   const t = useTranslations('common');

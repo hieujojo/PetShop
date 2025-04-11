@@ -5,12 +5,20 @@ interface CustomRequest extends Request {
   db: any;
 }
 
-export const getArticles = (req: CustomRequest, res: Response) => {
-  getAllArticles(req.db, (error, results) => {
-    if (error) {
-      console.error('Controller error:', error);
-      return res.status(500).json({ error: 'Failed to fetch articles: ' + error.message });
+export const getArticles = async (req: CustomRequest, res: Response) => {
+  try {
+    if (!req.db) {
+      throw new Error('Database connection is not available');
     }
-    res.status(200).json(results);
-  });
+    const articles = await getAllArticles(req.db);
+    console.log('Controller received articles:', articles);
+    if (!Array.isArray(articles)) {
+      throw new Error('Articles data is not an array');
+    }
+    res.status(200).json(articles);
+    console.log('Response sent for getArticles');
+  } catch (error: any) {
+    console.error('Controller error:', error);
+    res.status(500).json({ error: 'Failed to fetch articles: ' + error.message });
+  }
 };

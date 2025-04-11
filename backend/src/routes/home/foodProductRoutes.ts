@@ -1,8 +1,22 @@
-import express, { Request, Response } from 'express';
+import express, { RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getFoodProducts } from '../../controllers/home/foodProductController';
+
+interface CustomRequest extends Request {
+  db: any;
+}
+
+const getFoodProductsHandler: RequestHandler = async (req, res: Response, next: NextFunction) => {
+  try {
+    const customReq = req as CustomRequest;
+    await getFoodProducts(customReq, res);
+  } catch (error) {
+    next(error);
+  }
+};
 
 const router = express.Router();
 
-router.get('/food-products', (req: Request, res: Response) => getFoodProducts(req as any, res));;
+router.get('/', getFoodProductsHandler); // Sửa '/food-products' thành '/'
 
 export default router;

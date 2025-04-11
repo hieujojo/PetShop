@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
-const ToggleButton = styled.button<{ isDark: boolean }>`
+// Sử dụng shouldForwardProp để loại bỏ prop isDark khỏi DOM
+const ToggleButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== "isDark",
+})<{ isDark: boolean }>`
   width: 50px;
   height: 25px;
   background-color: ${({ isDark }) => (isDark ? "#3d3d3d" : "#ffffff")};

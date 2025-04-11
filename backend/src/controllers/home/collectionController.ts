@@ -5,12 +5,17 @@ interface CustomRequest extends Request {
   db: any; 
 }
 
-export const getCollections = (req: CustomRequest, res: Response) => {
-  getAllCollections(req.db, (error, results) => {
-    if (error) {
-      console.error('Controller error:', error);
-      return res.status(500).json({ error: 'Failed to fetch collections: ' + error.message });
+export const getCollections = async (req: CustomRequest, res: Response) => {
+  try {
+    if (!req.db) {
+      console.log('req.db is undefined in getCollections');
+      throw new Error('Database connection is not available');
     }
-    res.status(200).json(results);
-  });
+    console.log('req.db in getCollections:', req.db);
+    const collections = await getAllCollections(req.db);
+    res.status(200).json(collections);
+  } catch (error: any) {
+    console.error('Controller error:', error);
+    res.status(500).json({ error: 'Failed to fetch collections: ' + error.message });
+  }
 };
