@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "./context/ThemeProvider";
+import { Asap } from "next/font/google";
 import { AuthProvider } from "./context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale } from 'next-intl/server';
-import { defaultLocale } from '../../i18n';
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const asap = Asap({ subsets: ["latin"], weight: ["400", "700"] });
 
 export const metadata: Metadata = {
   title: "Pet Shop",
@@ -14,25 +19,13 @@ export const metadata: Metadata = {
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
-  // Lấy locale từ middleware
-  const locale = await getLocale() || defaultLocale;
-  let messages;
-  try {
-    // Tải file bản dịch cho locale hiện tại
-    messages = (await import(`../locales/${locale}/common.json`)).default;
-  } catch (error) {
-    console.error(`Failed to load messages for locale ${locale}:`, error);
-    // Fallback về locale mặc định (vi)
-    messages = (await import(`../locales/vi/common.json`)).default;
-  }
-
+}>) {
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang="en">
       <head>
         <link
           rel="icon"
@@ -40,20 +33,14 @@ export default async function RootLayout({
           type="image/png"
         />
       </head>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <ThemeProvider>
-            {GOOGLE_CLIENT_ID ? (
-              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <AuthProvider>
-                  {children}
-                </AuthProvider>
-              </GoogleOAuthProvider>
-            ) : (
-              <p>Error: Missing Google Client ID</p>
-            )}
-          </ThemeProvider>
-        </NextIntlClientProvider>
+      <body className={`${inter.className} ${asap.className} antialiased`}>
+        {GOOGLE_CLIENT_ID ? (
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <AuthProvider>{children}</AuthProvider>
+          </GoogleOAuthProvider>
+        ) : (
+          <p>Error: Missing Google Client ID</p>
+        )}
       </body>
     </html>
   );

@@ -107,12 +107,13 @@
     --chart-5: 340 75% 55%}
 }
 
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-white text-slate-800;
     @apply bg-background text-foreground;
   }
 }
@@ -129,25 +130,4 @@
 
 .animate-rotate-page {
   animation: rotateFromLeft 0.5s ease-in-out;
-}
-
-body {
-  @apply bg-white text-black;
-}
-
-/* Dark Mode */
-.dark body {
-  background-color: #292c35;
-  color: #E2E8F0;
-}
-
-/* Footer Light Mode */
-footer {
-  @apply bg-gray-200 text-gray-800;
-}
-
-/* Footer Dark Mode */
-.dark footer {
-  background-color: #313543; /* Màu xám xanh */
-  color: #E2E8F0;
 }
